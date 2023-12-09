@@ -5,4 +5,6 @@ const router = express.Router()
 
 router.get("/mockAPI", apiController.simulateMock)
 
+router.post("/getUserPoaps", apiController.getAllUserPoaps)
+
 module.exports = router

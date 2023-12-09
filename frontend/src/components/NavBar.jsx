@@ -3,7 +3,7 @@ import { Container, Row, Col, Button, Navbar, Nav,NavDropdown, Card } from 'reac
 
 const NavBar = () => {
   return (
-    <Navbar style={{margin:"0px", padding:"0px", fontSize:"1.2rem"}} data-bs-theme="dark" expand="lg" className="bg-body-tertiary">
+    <Navbar style={{margin:"0px", padding:"0px", fontSize:"1.3rem"}} data-bs-theme="dark" expand="lg" className="bg-body-tertiary">
       <Container style={{backgroundColor:"black"}} fluid>
         <Navbar.Brand href="#home">On-chain Wrapped</Navbar.Brand>
         <Navbar.Toggle aria-controls="basic-navbar-nav" />
