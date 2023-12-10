@@ -20,6 +20,7 @@
     "logger": "^0.0.1",
     "mongoose": "^6.6.1",
     "node-fetch": "^2.6.7",
-    "nodemon": "^2.0.19"
+    "nodemon": "^2.0.19",
+    "openai": "^4.20.1"
   }
 }

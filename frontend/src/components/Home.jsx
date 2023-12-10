@@ -6,6 +6,7 @@ import { loadFull } from "tsparticles";
 import { particles_config } from "../particle-configs/particle1";
 import NavBar from './NavBar';
 import PoapCards from './PoapCards';
+import TokenTransfersTable from './TokenTransfers';
 
 
 const Home = () => {
@@ -28,6 +29,7 @@ const Home = () => {
 
     const [mostLikedChain, setMostLikedChain] = useState("")
     const [mostTransferCount, setMostTransferCount] = useState("");
+    const [mostLikedChainData, setMostLikedChainData] = useState([])
 
     const [mostlikedTokenName, setMostLikedTokenName] = useState("")
     const [mostlikedTokenSymbol, setMostLikedTokenSymbol] = useState("")
@@ -36,11 +38,14 @@ const Home = () => {
     const [mostlikedTokenAddressMaxValueTransferred, setMostlikedTokenAddressMaxValueTransferred] = useState("")
     const [mostlikedTokenAddressTransferredTo, setMostlikedTokenAddressTransferredTo] = useState("")
 
+    const [followersGainedCount, setFollowersGainedCount] = useState("")
+    const [followersGained, setFollowersGained] = useState([])
 
     const [showCreatingWrappedModal, setShowCreatingWrappedModal] = useState(false)
     const [showWrappedResult, setShowWrappedResult] = useState(false)
 
     const [showPoaps, setShowPoaps] = useState(false)
+    const [showTxTable, setShowTxTable] = useState(false)
 
 
     const particlesInit = useCallback(async (engine) => {
@@ -65,6 +70,8 @@ const Home = () => {
 
         await getAllTokenTransferDataAndSetMostUsed()
 
+        await getLensFollowerData()
+
 
 
 
@@ -72,6 +79,36 @@ const Home = () => {
         setCreateWrappedButtonClickStatus(true)
         handleCloseCreatingWrappedModal()
         setShowWrappedResult(true)
+
+      }
+
+      async function getLensFollowerData() {
+
+        const response = await fetch('http://localhost:4000/api/getAllLensFollowersGained',{
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({
+              "userAddress": walletAddress,
+        })})
+        if(response.status === 200){
+          console.log("Request sent successfully")
+          const data = await response.json()
+          const socialFollowers = data.SocialFollowers
+          const followers = socialFollowers.Follower
+          if(followers){
+            const followersGainedCount = followers.length
+            setFollowersGainedCount(followersGainedCount)
+            setFollowersGained(followers)
+          }
+          else{
+            setFollowersGainedCount(0)
+            setFollowersGained([])
+          }
+          
+
+        }
 
       }
 
@@ -105,13 +142,16 @@ const Home = () => {
         var mostFreqToken;
 
         if(mostUsedChain=='Ethereum'){
+          setMostLikedChainData(ethereumData.tokenTransferArray)
           mostFreqToken = analyzeTokenTransfers(ethereumData.tokenTransferArray)
         }
         else if(mostUsedChain == 'Polygon'){
+          setMostLikedChainData(polygonData.tokenTransferArray)
           mostFreqToken = analyzeTokenTransfers(polygonData.tokenTransferArray)
         }
 
         else{
+          setMostLikedChainData(baseData.tokenTransferArray)
           mostFreqToken = analyzeTokenTransfers(baseData.tokenTransferArray)
         }
 
@@ -143,11 +183,18 @@ const Home = () => {
             const data = await response.json()
             const poaps = data.Poaps
             const poapArray = poaps.Poap
+            if(poapArray){
             console.log(poapArray)
             setUserPoaps(poapArray)
             const res = getMostFrequentLocation(poapArray)
             setMostFrequentLocation(res.mostFrequentLocation)
             setNumberofPoapsClaimedAtFreqLocation(res.maxCount)
+            }
+            else{
+              setUserPoaps([])
+              setMostFrequentLocation("")
+              setNumberofPoapsClaimedAtFreqLocation("")
+            }
 
           }
       }
@@ -388,6 +435,9 @@ const Home = () => {
         <br />
         <p style={{color:"white",fontFamily:"Roboto Mono", fontSize:"1.1rem"}}>Your favorite token was {mostlikedTokenName} with symbol {mostlikedTokenSymbol}. The total value of this token you transferred across all your transactions was {mostlikedTokenAddressTotalValueTransferred}. </p>
         <p style={{color:"white",fontFamily:"Roboto Mono", fontSize:"1.1rem"}}>The biggest transaction you made with this token was for {mostlikedTokenAddressMaxValueTransferred} {mostlikedTokenSymbol} to {mostlikedTokenAddressTransferredTo}</p>
+        <br />
+        <p style={{color:"white",fontFamily:"Roboto Mono", fontSize:"1.1rem"}}>This year, you gained {followersGainedCount} followers on your lens handle. </p>
+
         </div>
 
         <Button onClick={
@@ -402,7 +452,23 @@ const Home = () => {
         } style={{marginTop:"2%"}} variant="outline-light" size="lg">
                 Show / Hide my POAPs
                 </Button>{' '}
+
+                <Button onClick={
+          ()=>{
+            if(showTxTable){
+              setShowTxTable(false)
+            }
+            else{
+              setShowTxTable(true)
+            }
+          }
+        } style={{marginTop:"2%"}} variant="outline-light" size="lg">
+                Show / Hide my Transfers Data
+                </Button>{' '}
         {showPoaps && <PoapCards poapEvents={userPoaps} />}
+        {showTxTable && < div style={{padding:"2%"}}>
+        <TokenTransfersTable tokenTransfers={mostLikedChainData} />
+        </div>}
 
         </div>
         }

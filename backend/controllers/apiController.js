@@ -1,7 +1,9 @@
 require("dotenv").config()
 const { init, fetchQuery } = require("@airstack/node");
+const {OpenAI} = require("openai")
 
 init(process.env.AIRSTACK_API_KEY);
+const openai = new OpenAI();
 
 const simulateMock = async (req, res) => {
     try {
@@ -211,6 +213,71 @@ const getAllBaseTokenTransfers = async (req, res) => {
 
 }
 
+const getAllLensFollowersGained = async (req, res) => {
+    const userAddress = `"${req.body.userAddress}"`
+
+    const query = `query MyQuery {
+        SocialFollowers(
+          input: {filter: {identity: {_in: [${userAddress}]}, followerSince: {_gt: "2023-01-01T00:00:00Z"}, dappName: {_eq: lens}}, blockchain: ALL, limit: 200}
+        ) {
+          Follower {
+            followerAddress {
+              addresses
+              domains {
+                name
+              }
+              socials {
+                dappName
+                profileName
+                profileTokenId
+                profileTokenIdHex
+                userId
+                userAssociatedAddresses
+              }
+            }
+            followerProfileId
+            followerTokenId
+            followingAddress {
+              domains {
+                name
+              }
+            }
+            followingProfileId
+            followerSince
+          }
+        }
+      }`
+
+      const { data, error } = await fetchQuery(query);
+
+      if (error) {
+        throw new Error(error.message);
+      }
+    
+      res.send(data)
+}
 
 
-module.exports = {simulateMock, getAllUserPoaps, getAllEthereumTokenTransfers, getAllPolygonTokenTransfers, getAllBaseTokenTransfers}
+const createWrappedImage = async (req, res) => {
+    const promptText = req.body.promptText
+
+    const response = await openai.createImage({
+        model: "dall-e-3",
+        prompt: promptText,
+        n: 1,
+        size: "1024x1024",
+      });
+      image_url = response.data.data[0].url;
+
+      var obj = {
+        image_url: image_url
+      }
+
+      res.send(obj)
+
+
+
+}
+
+
+module.exports = {simulateMock, getAllUserPoaps, getAllEthereumTokenTransfers, getAllPolygonTokenTransfers, getAllBaseTokenTransfers, getAllLensFollowersGained, createWrappedImage}

@@ -13,4 +13,8 @@ router.post("/getAllPolygonTokenTransfers", apiController.getAllPolygonTokenTran
 
 router.post("/getAllBaseTokenTransfers", apiController.getAllBaseTokenTransfers)
 
+router.post("/getAllLensFollowersGained", apiController.getAllLensFollowersGained)
+
+router.post("/createWrappedImage", apiController.createWrappedImage)
+
 module.exports = router
