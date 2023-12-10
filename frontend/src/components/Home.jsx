@@ -29,6 +29,13 @@ const Home = () => {
     const [mostLikedChain, setMostLikedChain] = useState("")
     const [mostTransferCount, setMostTransferCount] = useState("");
 
+    const [mostlikedTokenName, setMostLikedTokenName] = useState("")
+    const [mostlikedTokenSymbol, setMostLikedTokenSymbol] = useState("")
+    const [mostlikedTokenAddress, setMostLikedTokenAddress] = useState("")
+    const [mostlikedTokenAddressTotalValueTransferred, setMostlikedTokenAddressTotalValueTransferred] = useState("")
+    const [mostlikedTokenAddressMaxValueTransferred, setMostlikedTokenAddressMaxValueTransferred] = useState("")
+    const [mostlikedTokenAddressTransferredTo, setMostlikedTokenAddressTransferredTo] = useState("")
+
 
     const [showCreatingWrappedModal, setShowCreatingWrappedModal] = useState(false)
     const [showWrappedResult, setShowWrappedResult] = useState(false)
@@ -94,6 +101,27 @@ const Home = () => {
         // Set the state for the most used chain and the number of transactions
         setMostLikedChain(mostUsedChain);
         setMostTransferCount(maxTransferCount);
+
+        var mostFreqToken;
+
+        if(mostUsedChain=='Ethereum'){
+          mostFreqToken = analyzeTokenTransfers(ethereumData.tokenTransferArray)
+        }
+        else if(mostUsedChain == 'Polygon'){
+          mostFreqToken = analyzeTokenTransfers(polygonData.tokenTransferArray)
+        }
+
+        else{
+          mostFreqToken = analyzeTokenTransfers(baseData.tokenTransferArray)
+        }
+
+        setMostLikedTokenName(mostFreqToken.name);
+        setMostLikedTokenSymbol(mostFreqToken.symbol);
+        setMostLikedTokenAddress(mostFreqToken.address);
+        setMostlikedTokenAddressTotalValueTransferred(mostFreqToken.totalAmount);
+        setMostlikedTokenAddressMaxValueTransferred(mostFreqToken.maxTransfer.amount);
+        setMostlikedTokenAddressTransferredTo(mostFreqToken.maxTransfer.to);
+
       }
       
 
@@ -357,6 +385,9 @@ const Home = () => {
         <p style={{color:"white", fontFamily:"Roboto Mono",fontSize:"1.1rem"}}>You claimed the most POAPs at {mostFrequentLocation.city},{mostFrequentLocation.country}. You claimed around {numberofPoapsClaimedAtFreqLocation} POAPs here !</p>
         <br />
         <p style={{color:"white",fontFamily:"Roboto Mono", fontSize:"1.1rem"}}>You used multiple chains for token transfers, but there was one-chain you liked the most. Your favorite chain was {mostLikedChain} where you performed {mostTransferCount} transactions. </p>
+        <br />
+        <p style={{color:"white",fontFamily:"Roboto Mono", fontSize:"1.1rem"}}>Your favorite token was {mostlikedTokenName} with symbol {mostlikedTokenSymbol}. The total value of this token you transferred across all your transactions was {mostlikedTokenAddressTotalValueTransferred}. </p>
+        <p style={{color:"white",fontFamily:"Roboto Mono", fontSize:"1.1rem"}}>The biggest transaction you made with this token was for {mostlikedTokenAddressMaxValueTransferred} {mostlikedTokenSymbol} to {mostlikedTokenAddressTransferredTo}</p>
         </div>
 
         <Button onClick={
