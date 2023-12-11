@@ -21,6 +21,16 @@ const Home = () => {
     const [numberofEthTokenTransfers, setNumberOfEthTokenTransfers] = useState("")
     const [ethTokenTransfers, setEthTokenTransfers] = useState([])
 
+    const [numberofEthNftTransfers, setNumberOfEthNftTransfers] = useState("")
+    const [ethNftTransfers, setEthNftTransfers] = useState([])
+
+    const [numberofPolygonNftTransfers, setNumberOfPolygonNftTransfers] = useState("")
+    const [polygonNftTransfers, setPolygonNftTransfers] = useState([])
+
+    const [numberofBaseNftTransfers, setNumberOfBaseNftTransfers] = useState("")
+    const [baseNftTransfers, setBaseNftTransfers] = useState([])
+
+
     const [numberofPolygonTokenTransfers, setNumberOfPolygonTokenTransfers] = useState("")
     const [polygonTokenTransfers, setPolygonTokenTransfers] = useState([])
 
@@ -30,6 +40,10 @@ const Home = () => {
     const [mostLikedChain, setMostLikedChain] = useState("")
     const [mostTransferCount, setMostTransferCount] = useState("");
     const [mostLikedChainData, setMostLikedChainData] = useState([])
+
+
+    const [mostLikedChainForNft, setMostLikedChainForNft] = useState("")
+    const [mostTransferCountForNft, setMostTransferCountForNft] = useState("");
 
     const [mostlikedTokenName, setMostLikedTokenName] = useState("")
     const [mostlikedTokenSymbol, setMostLikedTokenSymbol] = useState("")
@@ -44,8 +58,12 @@ const Home = () => {
     const [showCreatingWrappedModal, setShowCreatingWrappedModal] = useState(false)
     const [showWrappedResult, setShowWrappedResult] = useState(false)
 
+
+    const [dalleUrl, setDalleUrl] = useState("")
+
     const [showPoaps, setShowPoaps] = useState(false)
     const [showTxTable, setShowTxTable] = useState(false)
+    const [showAIGenImage, setShowAIGenImage] = useState(false)
 
 
     const particlesInit = useCallback(async (engine) => {
@@ -69,6 +87,8 @@ const Home = () => {
         await getAllUserPoaps()
 
         await getAllTokenTransferDataAndSetMostUsed()
+
+        await getAllNftTransferDataAndSetMostUsed()
 
         await getLensFollowerData()
 
@@ -109,6 +129,152 @@ const Home = () => {
           
 
         }
+
+      }
+
+      async function getAllEthereumNftTransfers() {
+        const response = await fetch('http://localhost:4000/api/getAllEthereumNftTransfers', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({
+            "userAddress": walletAddress,
+          })
+        });
+      
+        if (response.status === 200) {
+          console.log("Request sent successfully");
+          const data = await response.json();
+          const transfers = data.Ethereum;
+          let tokenTransferArray = [];
+          let transferCount = 0;
+      
+          if (transfers && transfers.TokenTransfer) {
+            tokenTransferArray = transfers.TokenTransfer;
+            transferCount = tokenTransferArray.length;
+          }
+      
+          setEthNftTransfers(tokenTransferArray);
+          setNumberOfEthNftTransfers(transferCount);
+      
+          console.log(tokenTransferArray);
+          console.log(transferCount);
+      
+          return { tokenTransferArray, transferCount };
+        }
+      
+        // Handle the case when the response status is not 200
+        console.log('Failed to fetch Ethereum token transfers');
+        setEthNftTransfers([]);
+        setNumberOfEthNftTransfers(0);
+        return { tokenTransferArray: [], transferCount: 0 };
+      }
+
+      async function getAllPolygonNftTransfers() {
+        const response = await fetch('http://localhost:4000/api/getAllPolygonNftTransfers', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({
+            "userAddress": walletAddress,
+          })
+        });
+      
+        if (response.status === 200) {
+          console.log("Request sent successfully");
+          const data = await response.json();
+          const transfers = data.Ethereum;
+          let tokenTransferArray = [];
+          let transferCount = 0;
+      
+          if (transfers && transfers.TokenTransfer) {
+            tokenTransferArray = transfers.TokenTransfer;
+            transferCount = tokenTransferArray.length;
+          }
+      
+          setPolygonNftTransfers(tokenTransferArray);
+          setNumberOfPolygonNftTransfers(transferCount);
+      
+          console.log(tokenTransferArray);
+          console.log(transferCount);
+      
+          return { tokenTransferArray, transferCount };
+        }
+      
+        // Handle the case when the response status is not 200
+        console.log('Failed to fetch Ethereum token transfers');
+        setPolygonNftTransfers([]);
+        setNumberOfPolygonNftTransfers(0);
+        return { tokenTransferArray: [], transferCount: 0 };
+      }
+
+      async function getAllBaseNftTransfers() {
+        const response = await fetch('http://localhost:4000/api/getAllBaseNftTransfers', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({
+            "userAddress": walletAddress,
+          })
+        });
+      
+        if (response.status === 200) {
+          console.log("Request sent successfully");
+          const data = await response.json();
+          const transfers = data.Ethereum;
+          let tokenTransferArray = [];
+          let transferCount = 0;
+      
+          if (transfers && transfers.TokenTransfer) {
+            tokenTransferArray = transfers.TokenTransfer;
+            transferCount = tokenTransferArray.length;
+          }
+      
+          setBaseNftTransfers(tokenTransferArray);
+          setNumberOfBaseNftTransfers(transferCount);
+      
+          console.log(tokenTransferArray);
+          console.log(transferCount);
+      
+          return { tokenTransferArray, transferCount };
+        }
+      
+        // Handle the case when the response status is not 200
+        console.log('Failed to fetch Ethereum token transfers');
+        setBaseNftTransfers([]);
+        setNumberOfBaseNftTransfers(0);
+        return { tokenTransferArray: [], transferCount: 0 };
+      }
+
+      async function getAllNftTransferDataAndSetMostUsed() {
+        // Call the functions and store their return values
+        const ethereumData = await getAllEthereumNftTransfers();
+        const polygonData = await getAllPolygonNftTransfers();
+        const baseData = await getAllBaseNftTransfers();
+      
+        // Extract transfer counts
+        const ethTransferCount = ethereumData.transferCount;
+        const polygonTransferCount = polygonData.transferCount;
+        const baseTransferCount = baseData.transferCount;
+      
+        // Determine the most used chain and its transfer count
+        const maxTransferCount = Math.max(ethTransferCount, polygonTransferCount, baseTransferCount);
+        let mostUsedChain = '';
+      
+        if (maxTransferCount === ethTransferCount) {
+          mostUsedChain = 'Ethereum';
+        } else if (maxTransferCount === polygonTransferCount) {
+          mostUsedChain = 'Polygon';
+        } else if (maxTransferCount === baseTransferCount) {
+          mostUsedChain = 'Base';
+        }
+      
+        // Set the state for the most used chain and the number of transactions
+        setMostLikedChainForNft(mostUsedChain);
+        setMostTransferCountForNft(maxTransferCount);
 
       }
 
@@ -167,6 +333,27 @@ const Home = () => {
 
       function handleCloseCreatingWrappedModal() {
         setShowCreatingWrappedModal(false)
+      }
+
+
+      async function createWrappedImageDallE(){
+        console.log("Request sent to Dall e")
+        const promptText = `This year, you claimed aroud ${userPoaps.length} POAPs. You claimed the most POAPs at ${mostFrequentLocation.city},${mostFrequentLocation.country}. You claimed around ${numberofPoapsClaimedAtFreqLocation} POAPs here ! You used multiple chains for token transfers, but there was one-chain you liked the most. Your favorite chain was ${mostLikedChain} where you performed ${mostTransferCount} transactions. Your favorite token was ${mostlikedTokenName} with symbol ${mostlikedTokenSymbol}. The total value of this token you transferred across all your transactions was ${mostlikedTokenAddressTotalValueTransferred}. The biggest transaction you made with this token was for ${mostlikedTokenAddressMaxValueTransferred} ${mostlikedTokenSymbol} to ${mostlikedTokenAddressTransferredTo}. This year, you gained ${followersGainedCount} followers on your lens handle.`
+        const response = await fetch('http://localhost:4000/api/createWrappedImage',{
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                "promptText": promptText,
+          })})
+          if(response.status === 200){
+            console.log("Request sent successfully")
+            const data = await response.json()
+            const url = data.image_url[0].url;
+            console.log(url)
+            setDalleUrl(url)
+          }
       }
 
       async function getAllUserPoaps() {
@@ -401,7 +588,7 @@ const Home = () => {
           <Modal.Title>Creating your wrapped !</Modal.Title>
         </Modal.Header>
         <Modal.Body>
-          <p>Hold on, we're indexing the chains as we speak !</p>
+          <p>Hold on, we're fetching your on-chain data ! Fetching from Airstack ⚡️ Also running some analytics on your data !</p>
           <Spinner animation="border" />
         </Modal.Body>
         <Modal.Footer>
@@ -436,6 +623,8 @@ const Home = () => {
         <p style={{color:"white",fontFamily:"Roboto Mono", fontSize:"1.1rem"}}>Your favorite token was {mostlikedTokenName} with symbol {mostlikedTokenSymbol}. The total value of this token you transferred across all your transactions was {mostlikedTokenAddressTotalValueTransferred}. </p>
         <p style={{color:"white",fontFamily:"Roboto Mono", fontSize:"1.1rem"}}>The biggest transaction you made with this token was for {mostlikedTokenAddressMaxValueTransferred} {mostlikedTokenSymbol} to {mostlikedTokenAddressTransferredTo}</p>
         <br />
+        <p style={{color:"white",fontFamily:"Roboto Mono", fontSize:"1.1rem"}}>Oh, and coming to NFTs, your favorite chain for NFT Transfers was {mostLikedChainForNft} with around {mostTransferCountForNft} transfers this year!</p>
+        <br />
         <p style={{color:"white",fontFamily:"Roboto Mono", fontSize:"1.1rem"}}>This year, you gained {followersGainedCount} followers on your lens handle. </p>
 
         </div>
@@ -465,11 +654,33 @@ const Home = () => {
         } style={{marginTop:"2%"}} variant="outline-light" size="lg">
                 Show / Hide my Transfers Data
                 </Button>{' '}
+
+          <Button onClick={
+              async ()=>{
+                if(!dalleUrl){
+                  await createWrappedImageDallE()
+                }
+                if(showAIGenImage){
+                  setShowAIGenImage(false)
+                }
+                else{
+                  setShowAIGenImage(true)
+                }
+              }
+          } style={{marginTop:"2%"}} variant="outline-light" size="lg">
+          Mint my Wrapped
+          </Button>{' '}
+          <Button onClick={
+           ()=>{
+          }
+          } style={{marginTop:"2%"}} variant="outline-light" size="lg">
+          Share my #Wrapped
+          </Button>{' '}
         {showPoaps && <PoapCards poapEvents={userPoaps} />}
         {showTxTable && < div style={{padding:"2%"}}>
         <TokenTransfersTable tokenTransfers={mostLikedChainData} />
         </div>}
-
+        {showAIGenImage &&  <div style={{marginTop:"2%"}}><h5 style={{marginBottom:"2%",color:"white",fontFamily:"Roboto Mono", fontSize:"1.2rem"}}>Your Wrapped Image</h5> <img src={dalleUrl} alt="From URL" /> </div>}
         </div>
         }
 

@@ -9,6 +9,12 @@ router.post("/getUserPoaps", apiController.getAllUserPoaps)
 
 router.post("/getAllEthereumTokenTransfers", apiController.getAllEthereumTokenTransfers)
 
+router.post("/getAllEthereumNftTransfers", apiController.getAllEthereumNftTransfers)
+
+router.post("/getAllPolygonNftTransfers", apiController.getAllPolygonNftTransfers)
+
+router.post("/getAllBaseNftTransfers", apiController.getAllBaseNftTransfers)
+
 router.post("/getAllPolygonTokenTransfers", apiController.getAllPolygonTokenTransfers)
 
 router.post("/getAllBaseTokenTransfers", apiController.getAllBaseTokenTransfers)
